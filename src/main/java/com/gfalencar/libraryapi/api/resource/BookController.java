@@ -11,6 +11,11 @@ public class BookController {
     @PostMapping // Anotação que se trata de um método POST
     @ResponseStatus(HttpStatus.CREATED)
     public BookDTO create(){
-        return null;
+        BookDTO dto = new BookDTO();
+        dto.setAuthor("Autor");
+        dto.setTitle("Meu Livro");
+        dto.setIsbn("12121212");
+        dto.setId(1L);
+        return dto;
     }
 }
