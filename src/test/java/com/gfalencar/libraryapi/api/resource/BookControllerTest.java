@@ -1,9 +1,11 @@
 package com.gfalencar.libraryapi.api.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfalencar.libraryapi.api.dto.BookDTO;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.service.BookService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(SpringExtension.class) // Spring criará um mini contexto para rodar o teste
@@ -57,7 +62,7 @@ public class BookControllerTest {
         mvc
            .perform(request) // Executa a requsição criado acima.
 //  verificator
-           .andExpect(MockMvcResultMatchers.status().isCreated()) // Método andExpect() -> Aqui passamos as nossas assertivas. OU seja o que estamos esperando.
+           .andExpect(status().isCreated()) // Método andExpect() -> Aqui passamos as nossas assertivas. OU seja o que estamos esperando.
                .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty()) // Espero que ele retorne o id populado. Não pode estar vazio.
            .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
            .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
@@ -67,7 +72,15 @@ public class BookControllerTest {
 //    Teste erro Criação de livro.
     @Test
     @DisplayName("Deve lançar erro de validação quando não houver dados suficiente para criação do livro!")
-    public void createInvalidBookTest(){
+    public void createInvalidBookTest() throws Exception {
+        String json = new ObjectMapper().writeValueAsString(new BookDTO());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
 
+        mvc.perform(request).andExpect(status().isBadRequest() )
+                .andExpect(jsonPath("errors", Matchers.hasSize(3)));
     }
 }
