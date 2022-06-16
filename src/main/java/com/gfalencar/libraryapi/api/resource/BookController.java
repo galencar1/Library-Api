@@ -16,6 +16,6 @@ public class BookController {
         dto.setTitle("Meu Livro");
         dto.setIsbn("12121212");
         dto.setId(1L);
-        return dto;
+        return dto  ;
     }
 }

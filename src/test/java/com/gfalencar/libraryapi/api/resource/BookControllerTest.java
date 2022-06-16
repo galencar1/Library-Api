@@ -1,6 +1,8 @@
 package com.gfalencar.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfalencar.libraryapi.api.dto.BookDTO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,19 +22,29 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @WebMvcTest // Testes unitários - Apenas para testar o comportamento da API - Os métodos implementados
 @AutoConfigureMockMvc
 public class BookControllerTest {
-
+//    Setup
+    BookDTO dto;
+    @BeforeEach
+    public void setUp(){
+        dto.builder()
+                .author("Artur")
+                .title("As Aventuras")
+                .isbn("001")
+                .build();
+    }
+/*****************************************************************************************/
 //    Definindo a rota de acesso a API para efetuar as requisições
     static String BOOK_API = "/api/books";
-
+/*******************************************************************************************/
     @Autowired // Injeta dependência
     MockMvc mvc; // Simula como se fosse uma requisição para API.
-
+/*******************************************************************************************/
 //    Primeiro teste - Post.
     @Test
     @DisplayName("Deve criar um livro com sucesso!")
     public void createBookTest() throws Exception{
 //  Scenario
-        String json = new ObjectMapper().writeValueAsString(null); // Transforma um objeto em JSON
+        String json = new ObjectMapper().writeValueAsString(dto); // Transforma um objeto em JSON
 //  Define um requisição com Mock
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(BOOK_API) // Primeiro parametro - ROTA
@@ -43,11 +55,12 @@ public class BookControllerTest {
 //  Efetuando a Requisição
         mvc
            .perform(request) // Executa a requsição criado acima.
+//  verificator
            .andExpect(MockMvcResultMatchers.status().isCreated()) // Método andExpect() -> Aqui passamos as nossas assertivas. OU seja o que estamos esperando.
            .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty()) // Espero que ele retorne o id populado. Não pode estar vazio.
-           .andExpect(MockMvcResultMatchers.jsonPath("title").value("Meu Livro"))
-           .andExpect(MockMvcResultMatchers.jsonPath("author").value("Autor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value("12121212"));
+           .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
+           .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
+                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));
     }
 
 //    Teste erro Criação de livro.
