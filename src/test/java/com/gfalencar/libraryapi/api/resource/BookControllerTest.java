@@ -2,13 +2,17 @@ package com.gfalencar.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfalencar.libraryapi.api.dto.BookDTO;
-import org.junit.jupiter.api.BeforeEach;
+import com.gfalencar.libraryapi.model.entity.Book;
+import com.gfalencar.libraryapi.service.BookService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -17,33 +21,30 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+
 @ExtendWith(SpringExtension.class) // Spring criará um mini contexto para rodar o teste
 @ActiveProfiles("test") // Roda apenas em ambiente de teste
 @WebMvcTest // Testes unitários - Apenas para testar o comportamento da API - Os métodos implementados
 @AutoConfigureMockMvc
 public class BookControllerTest {
-//    Setup
-    BookDTO dto;
-    @BeforeEach
-    public void setUp(){
-        dto.builder()
-                .author("Artur")
-                .title("As Aventuras")
-                .isbn("001")
-                .build();
-    }
 /*****************************************************************************************/
 //    Definindo a rota de acesso a API para efetuar as requisições
     static String BOOK_API = "/api/books";
 /*******************************************************************************************/
     @Autowired // Injeta dependência
     MockMvc mvc; // Simula como se fosse uma requisição para API.
+
+    @MockBean
+    BookService service;
 /*******************************************************************************************/
 //    Primeiro teste - Post.
     @Test
     @DisplayName("Deve criar um livro com sucesso!")
     public void createBookTest() throws Exception{
 //  Scenario
+        BookDTO dto = BookDTO.builder().author("Artur").title("As Aventuras").isbn("001").build();
+        Book savedBook = Book.builder().id(1l).author("Artur").title("As Aventuras").isbn("001").build();
+        BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
         String json = new ObjectMapper().writeValueAsString(dto); // Transforma um objeto em JSON
 //  Define um requisição com Mock
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -57,7 +58,7 @@ public class BookControllerTest {
            .perform(request) // Executa a requsição criado acima.
 //  verificator
            .andExpect(MockMvcResultMatchers.status().isCreated()) // Método andExpect() -> Aqui passamos as nossas assertivas. OU seja o que estamos esperando.
-           .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty()) // Espero que ele retorne o id populado. Não pode estar vazio.
+               .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty()) // Espero que ele retorne o id populado. Não pode estar vazio.
            .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
            .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));

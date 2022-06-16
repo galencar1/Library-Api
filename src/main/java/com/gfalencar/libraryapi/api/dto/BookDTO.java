@@ -1,13 +1,12 @@
 package com.gfalencar.libraryapi.api.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 //DTO -Se trata de uma classe de atributo simples para representar o JSON
-@Getter
-@Setter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookDTO {
     private Long id;
     private String title;
