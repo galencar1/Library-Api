@@ -1,6 +1,5 @@
 package com.gfalencar.libraryapi.api.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfalencar.libraryapi.api.dto.BookDTO;
 import com.gfalencar.libraryapi.model.entity.Book;
@@ -48,7 +47,7 @@ public class BookControllerTest {
     public void createBookTest() throws Exception{
 //  Scenario
         BookDTO dto = BookDTO.builder().author("Artur").title("As Aventuras").isbn("001").build();
-        Book savedBook = Book.builder().id(1l).author("Artur").title("As Aventuras").isbn("001").build();
+        Book savedBook = Book.builder().id(1L).author("Artur").title("As Aventuras").isbn("001").build();
         BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
         String json = new ObjectMapper().writeValueAsString(dto); // Transforma um objeto em JSON
 //  Define um requisição com Mock
