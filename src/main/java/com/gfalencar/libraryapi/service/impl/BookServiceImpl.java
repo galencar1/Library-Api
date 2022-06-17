@@ -1,7 +1,8 @@
 package com.gfalencar.libraryapi.service.impl;
 
+import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
-import com.gfalencar.libraryapi.model.repository.BookRepository;
+import com.gfalencar.libraryapi.repository.BookRepository;
 import com.gfalencar.libraryapi.service.BookService;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book save(Book book) {
+        if (repository.existsByIsbn(book.getIsbn())){
+            throw new BusinessException("ISBN já cadastrado!");
+        }
+
         return repository.save(book);
     }
 }
