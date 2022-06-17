@@ -2,6 +2,7 @@ package com.gfalencar.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfalencar.libraryapi.api.dto.BookDTO;
+import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.service.BookService;
 import org.hamcrest.Matchers;
@@ -41,12 +42,21 @@ public class BookControllerTest {
     @MockBean
     BookService service;
 /*******************************************************************************************/
+//Método para criação de um livro.
+    private BookDTO createNewBook(){
+        return BookDTO.builder()
+                .author("artur")
+                .title("As aventuras")
+                .isbn("001")
+                .build();
+    }
+/*************************************************************************************/
 //    Primeiro teste - Post.
     @Test
     @DisplayName("Deve criar um livro com sucesso!")
     public void createBookTest() throws Exception{
 //  Scenario
-        BookDTO dto = BookDTO.builder().author("Artur").title("As Aventuras").isbn("001").build();
+        BookDTO dto = createNewBook();
         Book savedBook = Book.builder().id(1L).author("Artur").title("As Aventuras").isbn("001").build();
         BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
         String json = new ObjectMapper().writeValueAsString(dto); // Transforma um objeto em JSON
@@ -81,5 +91,31 @@ public class BookControllerTest {
 
         mvc.perform(request).andExpect(status().isBadRequest() )
                 .andExpect(jsonPath("errors", Matchers.hasSize(3)));
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro ao tentar cadastrar erro com ISBN já utilizado por outro.")
+    public void createBookWithDuplicatedIsbn() throws Exception {
+//      scenario
+        BookDTO dto = createNewBook();
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+        String msgErro = "ISBN já cadastrado!";
+
+        BDDMockito.given(service.save(Mockito.any(Book.class)))
+                .willThrow(new BusinessException(msgErro));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+//      executor
+        mvc.perform(request)
+//      verify
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value(msgErro));
+
     }
 }

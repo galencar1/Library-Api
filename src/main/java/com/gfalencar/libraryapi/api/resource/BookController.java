@@ -2,6 +2,7 @@ package com.gfalencar.libraryapi.api.resource;
 
 import com.gfalencar.libraryapi.api.dto.BookDTO;
 import com.gfalencar.libraryapi.api.exception.ApiErrors;
+import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.service.BookService;
 import org.modelmapper.ModelMapper;
@@ -42,5 +43,11 @@ public class BookController {
     public ApiErrors handleValidationExceptions(MethodArgumentNotValidException ex){
         BindingResult bindingResult =  ex.getBindingResult();
         return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleBusinessException(BusinessException ex){
+        return new ApiErrors(ex);
     }
 }
