@@ -38,6 +38,14 @@ public class BookController {
         return modelMapper.map(entity, BookDTO.class);
     }
 
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id){
+        Book book = service.getById(id)
+                .orElseThrow( () -> new ResponseStatusException( HttpStatus.NOT_FOUND ) );;
+        service.delete(book);
+    }
+
     @GetMapping("{id}") // anotação para tratar de um método Get.
     public BookDTO get(@PathVariable Long id){
         return service
