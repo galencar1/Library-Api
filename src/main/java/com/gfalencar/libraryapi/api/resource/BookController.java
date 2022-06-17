@@ -42,7 +42,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         Book book = service.getById(id)
-                .orElseThrow( () -> new ResponseStatusException( HttpStatus.NOT_FOUND ) );;
+                .orElseThrow( () -> new ResponseStatusException( HttpStatus.NOT_FOUND ) );
         service.delete(book);
     }
 
@@ -52,6 +52,17 @@ public class BookController {
                 .getById(id)
                 .map( book ->  modelMapper.map(book, BookDTO.class) )
                 .orElseThrow( () -> new ResponseStatusException( HttpStatus.NOT_FOUND ) );
+    }
+
+    @PutMapping("{id}")
+    public BookDTO update(@PathVariable Long id, BookDTO dto){
+        return service.getById(id).map( book -> {
+            book.setAuthor(dto.getAuthor());
+            book.setTitle(dto.getTitle());
+            book = service.update(book);
+            return modelMapper.map(book, BookDTO.class);
+
+        }).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND) );
     }
 
 //    Exception Handler - Spring trata exceptions na API - MApeia a exception para um retorno
