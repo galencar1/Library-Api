@@ -37,6 +37,12 @@ public class BookController {
         return modelMapper.map(entity, BookDTO.class);
     }
 
+    @GetMapping("{id}") // anotação para tratar de um método Get.
+    public BookDTO get(@PathVariable Long id){
+        Book book = service.getById(id).get();
+        return modelMapper.map(book, BookDTO.class);
+    }
+
 //    Exception Handler - Spring trata exceptions na API - MApeia a exception para um retorno
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
