@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,7 +26,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.awt.print.Pageable;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class) // Spring criará um mini contexto para rodar o teste
 @ActiveProfiles("test") // Roda apenas em ambiente de teste
-@WebMvcTest // Testes unitários - Apenas para testar o comportamento da API - Os métodos implementados
+@WebMvcTest(controllers = {BookController.class}) // Testes unitários - Apenas para testar o comportamento da API - Os métodos implementados
 @AutoConfigureMockMvc
 public class BookControllerTest {
 /*****************************************************************************************/
