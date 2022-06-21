@@ -1,6 +1,7 @@
 package com.gfalencar.libraryapi.api.resource;
 
 import com.gfalencar.libraryapi.api.dto.LoanDTO;
+import com.gfalencar.libraryapi.api.dto.ReturnedLoanDTO;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.service.BookService;
@@ -35,5 +36,13 @@ public class LoanController {
 
         return entity.getId();
     }
+/*****************************************************************************************************************/
+    @PatchMapping("{id}")
+    public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto){
 
+        Loan loan = loanService.getById(id).get();
+        loan.setReturned(dto.isReturned());
+
+        loanService.update(loan);
+    }
 }

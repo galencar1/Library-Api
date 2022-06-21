@@ -1,7 +1,9 @@
 package com.gfalencar.libraryapi.api.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfalencar.libraryapi.api.dto.LoanDTO;
+import com.gfalencar.libraryapi.api.dto.ReturnedLoanDTO;
 import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
@@ -112,4 +114,26 @@ public class LoanControllerTest {
                 .andExpect( jsonPath("errors[0]").value("Book already loaned") );
     }
 /************************************************************************************************************************/
+    @Test
+    @DisplayName("Deve retornar um livro")
+    public void returnBookTest() throws Exception {
+//scenario
+        ReturnedLoanDTO dto = ReturnedLoanDTO.builder().returned(true).build();
+        Loan loan = Loan.builder().id(1L).build();
+        BDDMockito.given(loanService.getById(Mockito.anyLong())).willReturn(  Optional.of(loan) );
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        mvc.perform(
+                MockMvcRequestBuilders.patch(LOAN_API.concat("/1"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isOk());
+
+
+        Mockito.verify(loanService, Mockito.times(1) ).update(loan);
+//executor
+//verify
+    }
 }
