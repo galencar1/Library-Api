@@ -24,7 +24,7 @@ public class BookRepositoryTest {
     @Autowired
     BookRepository repository;
 
-    private Book createValidBook(){
+    public static Book createValidBook(){
         return Book.builder().isbn("123").author("Fulano").title("As aventuras").build();
     }
 
