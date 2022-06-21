@@ -82,7 +82,7 @@ public class BookControllerTest {
            .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));
     }
-
+/*******************************************************************************************/
 //    Teste erro Criação de livro.
     @Test
     @DisplayName("Deve lançar erro de validação quando não houver dados suficiente para criação do livro!")
@@ -97,7 +97,7 @@ public class BookControllerTest {
         mvc.perform(request).andExpect(status().isBadRequest() )
                 .andExpect(jsonPath("errors", Matchers.hasSize(3)));
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve lançar erro ao tentar cadastrar erro com ISBN já utilizado por outro.")
     public void createBookWithDuplicatedIsbn() throws Exception {
@@ -123,7 +123,7 @@ public class BookControllerTest {
                 .andExpect(jsonPath("errors[0]").value(msgErro));
 
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve obter informações de um livro.")
     public void getBookDetailsTest() throws Exception {
@@ -149,7 +149,7 @@ public class BookControllerTest {
                 .andExpect(jsonPath("isbn").value(createNewBook().getIsbn()))
     ;
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve retornar resource not found quando o livro procurado não existir")
     public void bookNotFoundTest() throws Exception{
@@ -164,7 +164,7 @@ public class BookControllerTest {
                 .perform(request)
                 .andExpect(status().isNotFound());
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve deletar um livro ")
     public void deleteBookTest() throws Exception{
@@ -181,7 +181,7 @@ public class BookControllerTest {
                 .andExpect(status().isNoContent() );
 
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve retornar resource not found quando não encontrar o livro para deletar")
     public void deleteInexistentBookTest() throws Exception{
@@ -197,6 +197,7 @@ public class BookControllerTest {
                 .andExpect(status().isNotFound());
 
     }
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve atualizar um livro")
     public void updateBookTest() throws Exception{
@@ -223,7 +224,7 @@ public class BookControllerTest {
                 .andExpect(jsonPath("author").value(createNewBook().getAuthor()))
                 .andExpect(jsonPath("isbn").value(createNewBook().getIsbn()));
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve retornar um 404 ao tentar atualizar um livro inexistente")
     public void updateInexistentBookTest() throws Exception{
@@ -241,7 +242,7 @@ public class BookControllerTest {
                 .andExpect(status().isNotFound());
 
     }
-
+/*******************************************************************************************/
     @Test
     @DisplayName("Deve filtrar livros")
     public void findBooksTest() throws Exception {

@@ -3,12 +3,14 @@ package com.gfalencar.libraryapi.api.resource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfalencar.libraryapi.api.dto.LoanDTO;
+import com.gfalencar.libraryapi.api.dto.LoanFilterDTO;
 import com.gfalencar.libraryapi.api.dto.ReturnedLoanDTO;
 import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.service.BookService;
 import com.gfalencar.libraryapi.service.LoanService;
+import com.gfalencar.libraryapi.service.LoanServiceTest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,6 +32,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -140,7 +146,7 @@ public class LoanControllerTest {
 //verify
     }
 
-    /************************************************************************************************************************/
+/************************************************************************************************************************/
     @Test
     @DisplayName("Deve retornar 404 quando tentar devolver um livro inexistente")
     public void returnInexistentBookTest() throws Exception {
@@ -161,5 +167,34 @@ public class LoanControllerTest {
 
         //        Mockito.verify(loanService, Mockito.times(1) ).update(loan);
     }
+/************************************************************************************************************************/
+    @Test
+    @DisplayName("Deve filtrar empréstimos")
 
+    public void findLoanTest() throws Exception{
+        Long id = 1L;
+
+        Loan loan = LoanServiceTest.createLoan();
+        loan.setId(id);
+        Book book = Book.builder().id(id).isbn("321").build();
+        loan.setBook(book);
+
+        BDDMockito.given(loanService.find( Mockito.any(LoanFilterDTO.class), Mockito.any(Pageable.class)) )
+                .willReturn( new PageImpl<Loan>(Arrays.asList(loan), PageRequest.of(0, 10), 1));
+
+        String queryString = String.format("?isbn=%s&customer%s&page=0&size=100",
+                book.getIsbn(), loan.getCustomer());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(LOAN_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect( status().isOk() )
+                .andExpect(jsonPath("content", Matchers.hasSize(1)))
+                .andExpect( jsonPath("totalElements").value(1) )
+                .andExpect( jsonPath("pageable.pageSize").value(10) )
+                .andExpect( jsonPath("pageable.pageNumber").value(1) );
+    }
 }
