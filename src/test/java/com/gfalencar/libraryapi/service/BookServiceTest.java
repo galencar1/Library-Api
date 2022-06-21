@@ -25,20 +25,21 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class BookServiceTest {
-
-    BookService service;
+/*******************************************************************************************************************/
     @MockBean
     BookRepository repository;
 
+    BookService service;
+/*******************************************************************************************************************/
     private Book createValidBook(){
         return Book.builder().isbn("123").author("Fulano").title("As aventuras").build();
     }
-
+/*******************************************************************************************************************/
     @BeforeEach
     public void setUp(){
         this.service = new BookServiceImpl(repository);
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve salvar um livro.")
     public void savedBookTest(){
@@ -61,7 +62,7 @@ public class BookServiceTest {
         Assertions.assertThat(savedBook.getTitle()).isEqualTo("As aventuras");
         Assertions.assertThat(savedBook.getAuthor()).isEqualTo("Fulano");
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve lançar erro de negocio ao tentar salvar um livro com isbn duplicado.")
     public void shouldNotSaveABookWithDuplicatedISBN(){
@@ -77,7 +78,7 @@ public class BookServiceTest {
 
         Mockito.verify(repository, Mockito.never()).save(book);
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve obter um livro por ID")
     public void getByIdTest(){
@@ -96,6 +97,7 @@ public class BookServiceTest {
         Assertions.assertThat( foundBook.get().getIsbn() ).isEqualTo( book.getIsbn() );
 
     }
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve retornar vazio ao obter um livro por ID quando ele não existe")
     public void bookNotFoundByIdTest(){
@@ -107,7 +109,7 @@ public class BookServiceTest {
 //  verificator
         Assertions.assertThat( notFoundBook.isPresent() ).isFalse();
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve deletar um livro")
     public void deleteBookTest(){
@@ -118,7 +120,7 @@ public class BookServiceTest {
 //  verify
         Mockito.verify(repository, Mockito.times(1)).delete(book);
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve ocorrer erro ao tentar deletar um livro inexistente ")
     public void deleteInvalidBookTest(){
@@ -128,7 +130,7 @@ public class BookServiceTest {
 
         Mockito.verify(repository, Mockito.never()).delete(book);
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve ocorrer erro ao tentar atualizar um livro inexistente ")
     public void updateInvalidBookTest(){
@@ -138,7 +140,7 @@ public class BookServiceTest {
 
         Mockito.verify(repository, Mockito.never()).save(book);
     }
-
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve atualizar um livro")
     public void updateBookTest(){
@@ -162,6 +164,7 @@ public class BookServiceTest {
         Assertions.assertThat(book.getAuthor()).isEqualTo(updatedBook.getAuthor());
         Assertions.assertThat(book.getIsbn()).isEqualTo(updatedBook.getIsbn());
     }
+/*******************************************************************************************************************/
     @Test
     @DisplayName("Deve filtrar livros pelas propriedades")
     public void findBookTest(){
@@ -183,5 +186,21 @@ public class BookServiceTest {
         Assertions.assertThat(result.getPageable().getPageSize()).isEqualTo(10);
 
 
+    }
+/*******************************************************************************************************************/
+    @Test
+    @DisplayName("Deve obter um livro pelo ISBN")
+    public void getBookByIsbnTest(){
+//  scenario
+        String isbn = "123";
+        Mockito.when(repository.findByIsbn(isbn)).thenReturn( Optional.of( Book.builder().id(1L).isbn(isbn ).build() ) );
+//  executor
+        Optional<Book> book = service.getBookByIsbn(isbn);
+//  verify
+        Assertions.assertThat(book.isPresent()).isTrue();
+        Assertions.assertThat(book.get().getId()).isEqualTo(1L);
+        Assertions.assertThat(book.get().getIsbn()).isEqualTo(isbn);
+
+        Mockito.verify(repository, Mockito.times(1)).findByIsbn(isbn);
     }
 }
