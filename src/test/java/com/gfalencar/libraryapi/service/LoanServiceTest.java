@@ -1,5 +1,6 @@
 package com.gfalencar.libraryapi.service;
 
+import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.model.repository.LoanRepository;
@@ -28,7 +29,7 @@ public class LoanServiceTest {
     public void setUp(){
         this.loanService = new LoanServiceImpl(repository);
     }
-
+    /***********************************************************************************************************************/
     @Test
     @DisplayName("Deve salvar um empréstimo")
     public void saveLoanTest(){
@@ -47,6 +48,7 @@ public class LoanServiceTest {
                 .book(book)
                 .build();
         /**************************************************/
+        Mockito.when(repository.existsByBookAndNotReturned(book)).thenReturn(false);
         Mockito.when( repository.save(savingLoan) ).thenReturn(savedLoan);
 
         Loan loan = loanService.save(savingLoan);
@@ -56,4 +58,27 @@ public class LoanServiceTest {
         Assertions.assertThat(loan.getCustomer()).isEqualTo(savedLoan.getCustomer());
         Assertions.assertThat(loan.getLoanDate()).isEqualTo(savedLoan.getLoanDate());
     }
+/***********************************************************************************************************************/
+@Test
+@DisplayName("Deve lançar erro de negócio ao salvar um empréstimo com um livro já emprestado")
+public void loanedBookSaveTest(){
+    Book book = Book.builder().id(1L).build();
+    /**************************************************/
+    Loan savingLoan = Loan.builder()
+            .book(book)
+            .customer("Fulano")
+            .loanDate(LocalDate.now())
+            .build();
+
+    Mockito.when(repository.existsByBookAndNotReturned(book)).thenReturn(true);
+    /**************************************************/
+    Throwable exception = Assertions.catchThrowable(() -> loanService.save(savingLoan));
+    /**************************************************/
+
+    Assertions.assertThat(exception)
+            .isInstanceOf(BusinessException.class)
+            .hasMessage("Book already loaned");
+
+    Mockito.verify(repository, Mockito.never()).save(savingLoan);
+}
 }

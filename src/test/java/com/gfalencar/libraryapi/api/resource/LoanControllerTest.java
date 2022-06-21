@@ -42,6 +42,7 @@ public class LoanControllerTest {
     @MockBean
     private LoanService loanService;
 
+/************************************************************************************************************************/
     @Test
     @DisplayName("deve realizar um emprèstimo")
     public void  createLoanTest() throws Exception{
@@ -69,7 +70,7 @@ public class LoanControllerTest {
                 .andExpect( status().isCreated() )
                 .andExpect( content().string("1") );
     }
-
+/************************************************************************************************************************/
     @Test
     @DisplayName("Deve retornar erro ao fazer empréstimo de um livro inexistente.")
     public void invalidIsbnCreateLoanTest() throws Exception {
@@ -89,7 +90,7 @@ public class LoanControllerTest {
                 .andExpect( jsonPath("errors", Matchers.hasSize(1)) )
                 .andExpect( jsonPath("errors[0]").value("Book not found for passed ISBN") );
     }
-
+/************************************************************************************************************************/
     @Test
     @DisplayName("Deve retornar erro ao fazer empréstimo de um livro emprestado.")
     public void loanedBookErrorOnCreateLoanTest() throws Exception {
@@ -110,5 +111,5 @@ public class LoanControllerTest {
                 .andExpect( jsonPath("errors", Matchers.hasSize(1)) )
                 .andExpect( jsonPath("errors[0]").value("Book already loaned") );
     }
-
+/************************************************************************************************************************/
 }
