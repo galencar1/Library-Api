@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -28,19 +30,42 @@ public class LoanRepositoryTest {
     @Autowired
     private LoanRepository repository;
 
-    @Test
-    @DisplayName("Deve verificar se existe empréstimo não devolvido para o livro")
-    public void existsByBookAndNotReturnedTest(){
-//scenario
+    public Loan createAndPersistLoan(){
         Book book = createValidBook();
         entityManager.persist(book);
 
         Loan loan = Loan.builder().book(book).customer("Fulano").loanDate(LocalDate.now()).build();
         entityManager.persist(loan);
+
+        return loan;
+    }
+
+    @Test
+    @DisplayName("Deve verificar se existe empréstimo não devolvido para o livro")
+    public void existsByBookAndNotReturnedTest(){
+//scenario
+        Loan loan = createAndPersistLoan();
+        Book book = loan.getBook();
 //  executor
         boolean exists = repository.existsByBookAndNotReturned(book);
 
 //  verify
         Assertions.assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve buscar empréstimo pelo ISBN do livro ou Customer")
+    public void findByBookIsbnOrCustomerTest(){
+//scenario
+        Loan loan = createAndPersistLoan();
+
+        Page<Loan> result = repository.findByBookIsbnOrCustomer("123", "Fulano", PageRequest.of(0, 10));
+
+        Assertions.assertThat(result.getContent()).hasSize(1);
+        Assertions.assertThat(result.getContent()).contains(loan);
+        Assertions.assertThat(result.getPageable().getPageSize()).isEqualTo(10);
+        Assertions.assertThat(result.getPageable().getPageNumber()).isEqualTo(0);
+        Assertions.assertThat(result.getTotalElements()).isEqualTo(1);
+
     }
 }
