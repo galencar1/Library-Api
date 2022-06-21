@@ -37,10 +37,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LoanControllerTest {
 
     static final String LOAN_API = "/api/loans";
+/************************************************************************************************************************/
     @Autowired
     MockMvc mvc; // Será utilizado para fazer as requisições
+/************************************************************************************************************************/
     @MockBean
     private BookService bookService;
+/************************************************************************************************************************/
     @MockBean
     private LoanService loanService;
 

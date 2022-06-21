@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -24,7 +25,18 @@ public class LoanServiceTest {
     @MockBean
     private LoanRepository repository;
     private LoanService loanService;
+    /***********************************************************************************************************************/
+    public Loan createLoan(){
+        Book book = Book.builder().id(1L).build();
+        String customer = "Fulano";
 
+        return Loan.builder()
+                .book(book)
+                .customer(customer)
+                .loanDate(LocalDate.now())
+                .build();
+    }
+    /***********************************************************************************************************************/
     @BeforeEach
     public void setUp(){
         this.loanService = new LoanServiceImpl(repository);
@@ -81,4 +93,26 @@ public void loanedBookSaveTest(){
 
     Mockito.verify(repository, Mockito.never()).save(savingLoan);
 }
+/***********************************************************************************************************************/
+    @Test
+    @DisplayName("Deve obter as informações de um empréstimo pelo ID")
+    public void getLoanDetailsTest(){
+//        scenario
+        Long id = 1L;
+
+        Loan loan = createLoan();
+        loan.setId(id);
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(loan));
+//        executor
+        Optional<Loan> result = loanService.getById(id);
+//        verify
+        Assertions.assertThat(result.isPresent()).isTrue();
+        Assertions.assertThat(result.get().getId()).isEqualTo(id);
+        Assertions.assertThat(result.get().getCustomer()).isEqualTo(loan.getCustomer());
+        Assertions.assertThat(result.get().getBook()).isEqualTo(loan.getBook());
+        Assertions.assertThat(result.get().getLoanDate()).isEqualTo(loan.getLoanDate());
+
+        Mockito.verify(repository).findById(id);
+    }
 }
