@@ -2,6 +2,7 @@ package com.gfalencar.libraryapi.service.impl;
 
 import com.gfalencar.libraryapi.api.dto.LoanFilterDTO;
 import com.gfalencar.libraryapi.exception.BusinessException;
+import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.model.repository.LoanRepository;
 import com.gfalencar.libraryapi.service.LoanService;
@@ -41,4 +42,9 @@ public class LoanServiceImpl implements LoanService {
     public Page<Loan> find(LoanFilterDTO filterDTO, Pageable pageable) {
         return repository.findByBookIsbnOrCustomer(filterDTO.getIsbn(), filterDTO.getCustomer(), pageable);
    }
+
+    @Override
+    public Page<Loan> getLoansByBook(Book book, Pageable pageable) {
+        return repository.findByBook(book, pageable);
+    }
 }
