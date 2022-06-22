@@ -15,10 +15,6 @@ public class LibraryApiApplication {
 	public ModelMapper modelMapper(){
 		return new ModelMapper();
 	}
-	@Scheduled(cron = "0 33 9 1/1 * ?  ")
-	public void testeAgendamentoTarefas(){
-		System.out.println("AGENDAMENTO DE TAREFAS FUNCIONANDO COM SUCESSO");
-	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(LibraryApiApplication.class, args);
