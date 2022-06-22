@@ -6,7 +6,6 @@ import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.service.BookService;
 import com.gfalencar.libraryapi.service.LoanService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
-@RequiredArgsConstructor
+
 public class BookController {
 //Criando a rota de POST
 
@@ -29,6 +28,11 @@ public class BookController {
     private final ModelMapper modelMapper;
     private final LoanService loanService;
 
+    public BookController(BookService service, ModelMapper modelMapper, LoanService loanService) {
+        this.service = service;
+        this.modelMapper = modelMapper;
+        this.loanService = loanService;
+    }
 
     @PostMapping // Anotação que se trata de um método POST
     @ResponseStatus(HttpStatus.CREATED)
