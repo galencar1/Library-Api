@@ -59,7 +59,7 @@ public class LoanControllerTest {
     public void  createLoanTest() throws Exception{
 
 
-        LoanDTO dto = LoanDTO.builder().isbn("123").customer("Fulano").build();// Criado o Json com o DTO
+        LoanDTO dto = LoanDTO.builder().isbn("123").customer("Fulano").email("customer@email.com").build();// Criado o Json com o DTO
         String json = new ObjectMapper().writeValueAsString(dto); //Transforma String acima em JSON
 
         //Após receber o JSON acima - Busca no service o livro com o ISBN informado
