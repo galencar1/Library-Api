@@ -5,6 +5,8 @@ import com.gfalencar.libraryapi.api.dto.BookDTO;
 import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.service.BookService;
+import com.gfalencar.libraryapi.service.EmailService;
+import com.gfalencar.libraryapi.service.LoanService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +48,12 @@ public class BookControllerTest {
 
     @MockBean
     BookService service;
+
+    @MockBean
+    LoanService loanService;
+
+    @MockBean
+    EmailService emailService;
 /*******************************************************************************************/
 //Método para criação de um livro.
     private BookDTO createNewBook(){

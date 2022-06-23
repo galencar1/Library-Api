@@ -1,6 +1,7 @@
 package com.gfalencar.libraryapi.repository;
 
 import com.gfalencar.libraryapi.model.entity.Book;
+import com.gfalencar.libraryapi.service.EmailService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -23,6 +25,9 @@ public class BookRepositoryTest {
 
     @Autowired
     BookRepository repository;
+
+    @MockBean
+    private EmailService emailService;
 
     public static Book createValidBook(){
         return Book.builder().isbn("123").author("Fulano").title("As aventuras").build();

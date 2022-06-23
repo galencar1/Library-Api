@@ -3,6 +3,7 @@ package com.gfalencar.libraryapi.repository;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.model.repository.LoanRepository;
+import com.gfalencar.libraryapi.service.EmailService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,6 +32,9 @@ public class LoanRepositoryTest {
     private TestEntityManager entityManager;
     @Autowired
     private LoanRepository repository;
+
+    @MockBean
+    private EmailService emailService;
 
     public Loan createAndPersistLoan(LocalDate loanDate){
         Book book = createValidBook();

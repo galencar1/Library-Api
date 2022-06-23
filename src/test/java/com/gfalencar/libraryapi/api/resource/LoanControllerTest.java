@@ -9,6 +9,7 @@ import com.gfalencar.libraryapi.exception.BusinessException;
 import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.service.BookService;
+import com.gfalencar.libraryapi.service.EmailService;
 import com.gfalencar.libraryapi.service.LoanService;
 import com.gfalencar.libraryapi.service.LoanServiceTest;
 import org.hamcrest.Matchers;
@@ -52,6 +53,9 @@ public class LoanControllerTest {
 /************************************************************************************************************************/
     @MockBean
     private LoanService loanService;
+
+    @MockBean
+    private EmailService emailService;
 
 /************************************************************************************************************************/
     @Test
