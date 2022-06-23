@@ -8,6 +8,7 @@ import com.gfalencar.libraryapi.model.entity.Book;
 import com.gfalencar.libraryapi.model.entity.Loan;
 import com.gfalencar.libraryapi.service.BookService;
 import com.gfalencar.libraryapi.service.LoanService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class LoanController {
     /*******************************************************************************************************************/
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Create a Loan By Book and Customer")
     public Long create(@RequestBody LoanDTO dto){
         Book book = bookService.getBookByIsbn(dto.getIsbn())
                 .orElseThrow( () -> new ResponseStatusException(  HttpStatus.BAD_REQUEST, "Book not found for passed ISBN" ));
@@ -48,6 +50,7 @@ public class LoanController {
     }
 /*****************************************************************************************************************/
     @PatchMapping("{id}")
+    @ApiOperation("Updates a loan data")
     public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto){
 
         Loan loan = loanService.getById(id).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND) );
@@ -56,6 +59,7 @@ public class LoanController {
         loanService.update(loan);
     }
     @GetMapping
+    @ApiOperation("Browse loan data")
     public Page<LoanDTO> find(LoanFilterDTO dto, Pageable pageRequest){
         Page<Loan> result = loanService.find(dto, pageRequest);
         List<LoanDTO> loans = result.getContent().stream().map(entity -> {
